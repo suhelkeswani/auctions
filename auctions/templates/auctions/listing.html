@@ -1,0 +1,135 @@
+{% extends "auctions/layout.html" %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+{% block body %}
+
+<div>
+    <div class="card" style="width: 80%;">
+      <img src="{{listing.img}}" class="card-img-top">
+      <div class="card-body">
+        <h5 class="card-title">{{listing.name}}</h5>
+        <p class="card-text">by {{listing.seller}}</p>
+        {% if listing.active %}
+        <p class="card-text"><strong>Current Bid: ${{listing.getCurrentBid}} {% if listing.getCurrentBidder %} by {{listing.getCurrentBidder}} {% else %} (No bids posted){% endif %}</strong></p>
+        <p class="card-text">Starting Bid: ${{listing.init_price}} </p>
+        <p class="card-text">Category: <a href="{% url 'category' listing.category %}">{{listing.category}}</a></p>
+        <p class="card-text">Description:<br>{{listing.descr}}</p>
+
+        {% if request.user == listing.seller %}
+          <form action="{% url 'close_listing' listing.id listing.name %}" method="post">
+            {% csrf_token %}
+            <input class="btn btn-primary" type="submit" value="Close Listing">
+          </form>
+
+        {% elif user.is_authenticated %}
+          <form action="{% url 'submit_bid' listing.id listing.name %}" method="post">
+            {% csrf_token %}
+            <text>$</text><input name="bid" id="id_bid" type="number" onchange="setTwoNumberDecimal" min="{{minBid}}" max="999999999999" step="0.01" value="{{minBid}}" />
+            <input type="submit" value="Submit Bid">
+          </form>
+        {% endif %}
+
+
+        {% if user.is_authenticated %}
+          <br>
+          {% if not isOnWL %}
+
+            <form action="{% url 'add_to_watchlist' listing.id listing.name%}" method="post">
+              {% csrf_token %}
+              <input class="btn btn-primary" type="submit" value="Add to Watchlist">
+            </form>
+            <br>
+
+          {% else %}
+
+            <form action="{% url 'remove_from_watchlist' listing.id listing.name%}" method="post">
+              {% csrf_token %}
+              <input class="btn btn-primary" type="submit" value="Remove from Watchlist">
+            </form>
+            <br>
+          {% endif %}
+
+        {% endif %}
+        {% endif %}
+        {% if listing.winner %}
+        <p class="card-text"><strong>Final Bid: ${{listing.final_price}} <br> Winner: {{listing.winner}}</strong></p>
+        <p class="card-text">Category: <a href="{% url 'category' listing.category %}">{{listing.category}}</a></p>
+        <p class="card-text">Description:<br>{{listing.descr}}</p>
+        {% if isOnWL %}
+        <form action="{% url 'remove_from_watchlist' listing.id listing.name%}" method="post">
+          {% csrf_token %}
+          <input class="btn btn-primary" type="submit" value="Remove from Watchlist">
+        </form>
+
+        <br>
+      {% endif %}
+
+        {% elif not listing.active %}
+        <p class="card-text"><strong>This listing was closed by the seller before any bids were made.</strong></p>
+        <p class="card-text">Category: <a href="{% url 'category' listing.category %}">{{listing.category}}</a></p>
+        <p class="card-text">Description:<br>{{listing.descr}}</p>
+        {% if isOnWL %}
+        <form action="{% url 'remove_from_watchlist' listing.id listing.name%}" method="post">
+          {% csrf_token %}
+          <input class="btn btn-primary" type="submit" value="Remove from Watchlist">
+        </form>
+        <br>
+        {% endif %}
+        {% endif %}
+
+      </div>
+    </div>
+
+{% if user.is_authenticated %}
+    <div class="card" style="width: 80%;">
+      <div class="card-body">
+        <h5 class="card-title">Leave a Comment</h5>
+          <p class="card-text">
+              <div class="card" style="border: none;">
+                <div class="card-body">
+                  <form method="post">
+                    {% csrf_token %}
+                    {{ commentForm }}
+                    <br> <br>
+                    <input type="submit">
+                  </form>
+                </div>
+              </div>
+          </p>
+      </div>
+    </div>
+{% endif %}
+
+    <div class="card" style="width: 80%;">
+      <div class="card-body">
+        <h5 class="card-title">Comments</h5>
+
+        {% if listing.comments.all %}
+
+          <p class="card-text">
+              {% for comment in listing.comments.all %}
+              <div class="card" style="border: none;">
+                <div class="card-body">
+                    <p class="card-text">{{comment.comment}}</p>
+                    <p class="card-text">by {{comment.commenter}}, {{comment.date_time}}</p>
+                </div>
+              </div>
+              {% endfor %}
+          </p>
+
+        {% else %}
+
+        <p class="card-text">
+            <div class="card" style="border: none;">
+              <div class="card-body">
+                  <p class="card-text">No comments yet. Be the first to comment!</p>
+              </div>
+            </div>
+        </p>
+
+        {% endif %}
+
+      </div>
+    </div>
+</div>
+
+{% endblock %}

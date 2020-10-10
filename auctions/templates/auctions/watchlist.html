@@ -1,0 +1,15 @@
+{% extends "auctions/layout.html" %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+{% block body %}
+    <h2>Watchlist</h2>
+      {% if watchlist %}
+      <ul>
+        {% for item in watchlist %}
+          <li><a href="{% url 'listing' item.id item.name %}">{{item.name}}</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>No items have been added. <a href="{% url 'index' %}"> Explore auctions listings.</a> </p>
+      {% endif %}
+{% endblock %}

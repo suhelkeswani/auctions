@@ -1,0 +1,25 @@
+{% extends "auctions/layout.html" %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+{% block body %}
+
+    <h2>{{category}}</h2>
+    {% if activeCategoryListing%}
+    <div class="card-columns">
+        {% for listing in activeCategoryListing %}
+          <div class="card">
+            <img src="{{listing.img}}" class="card-img-top">
+            <div class="card-body">
+              <h5 class="card-title">{{listing.name}}</h5>
+              <p class="card-text">Seller: {{listing.seller}} <br>  Current Bid: ${{listing.init_price}}</p>
+              <p class="card-text">Description:<br>{{listing.descr}}</p>
+              <a href="{% url 'listing' listing.id listing.name %}" class="btn btn-primary">See Listing</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      {% else %}
+        <p> There are no active listings for this category. <a href="{% url 'categories' %}">Explore other Categories.</a></p>
+      {% endif %}
+
+{% endblock %}
