@@ -8,8 +8,8 @@ Auctions is a mock e-commerce auctioning website where users can register to bid
 Since this project is made with Django, having python and necessary python packages to run Django downloaded are necessary. In order to run the site, first clone the respository. Next, on a terminal window, change your directory into the repository and run the following lines of code to setup the database:
 
 ```
-python manage.py makemigrations auctions
-python manage.py migrate
+python3 manage.py makemigrations auctions
+python3 manage.py migrate
 ```
 Note that the previous lines of code are only required the first time the project is being run. After that, the database does not need to be setup again.
 
